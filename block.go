@@ -100,8 +100,18 @@ func (c BlockAPI) Put(ctx context.Context, src io.Reader, opts ...caopts.BlockPu
 }
 
 // Get attempts to resolve the path and return a reader for data in the block
-func (c BlockAPI) Get(context.Context, coreiface.Path) (io.Reader, error) {
-	return nil, fmt.Errorf("not finished")
+func (c BlockAPI) Get(ctx context.Context, path coreiface.Path) (io.Reader, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/block/get?arg=%s", c.url, path.String()), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := c.cli.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Body, nil
 }
 
 // Rm removes the block specified by the path from local blockstore.
